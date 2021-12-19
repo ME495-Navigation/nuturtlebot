@@ -87,7 +87,7 @@ sudo cp opencr_firmware/opencr_update $rootfs/usr/bin
 
 echo "Copying the final static configuration"
 # Copy over the configuration
-sudo cp -ra ${script_dir}/config_root/ $rootfs
+sudo cp -ra ${script_dir}/config_root/* $rootfs
 
 # unmount
 sudo umount $rootfs/boot/firmware
