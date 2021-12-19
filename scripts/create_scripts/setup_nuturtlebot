@@ -30,7 +30,7 @@ rm -rf /usr/share/cmake*
 rm /usr/bin/cmake
 apt-get install -y cmake
 
-apt-get install -y ../ros-noetic-nuturtlebot_0.0.1-0focal_armhf.deb
+apt-get install --no-install-recommends --no-install-suggests -y ../ros-noetic-nuturtlebot_0.0.1-0focal_armhf.deb
 
 # Binary package is installed, delete the source code
 cd ..
