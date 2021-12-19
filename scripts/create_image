@@ -62,7 +62,7 @@ sudo rm $rootfs/setup_turtle
 
 
 echo "MSR specific setup"
-sudo cp ${script_dir}/setup_msr $rootfs
+sudo cp ${script_dir}/create_scripts/setup_msr $rootfs
 sudo chmod 755 $rootfs/setup_msr
 sudo proot -q qemu-arm-static -S $rootfs /setup_msr
 sudo rm $rootfs/setup_msr
@@ -82,13 +82,13 @@ sudo cp opencr_firmware/opencr_update $rootfs/usr/bin
 
 
 echo "Nuturtlebot Installation Ubuntu"
-sudo cp ${script_dir}/setup_nuturtlebot $rootfs
+sudo cp ${script_dir}/create_scripts/setup_nuturtlebot $rootfs
 sudo chmod 755 $rootfs/setup_nuturtlebot
 sudo proot -q qemu-arm-static -S $rootfs /setup_nuturtlebot
 sudo rm $rootfs/setup_nuturtlebot
 
 echo "Cleanup Ubuntu"
-sudo cp ${script_dir}/cleanup_ubuntu $rootfs
+sudo cp ${script_dir}/create_scripts/cleanup_ubuntu $rootfs
 sudo chmod 755 $rootfs/cleanup_buntu
 sudo proot -q qemu-arm-static -S $rootfs /cleanup_ubuntu
 sudo rm $rootfs/cleanup_ubuntu
