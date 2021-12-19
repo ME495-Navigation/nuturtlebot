@@ -1,0 +1,54 @@
+#!/bin/sh
+
+# Build the arduino opencr firmware.
+
+# Get the location of this script
+script=$(readlink -f "$0")
+script_dir=$(dirname "$script")
+
+# Create the build directory (as optionally specified by the first argument)
+if [ -z "$1" ]
+then
+    build=build/opencr
+else
+    build="$1"
+fi
+mkdir -p $build
+cd $build
+
+# Download the arduino command line interface
+curl -L "https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Linux_64bit.tar.gz" > arduinocli.tar.gz
+tar xf arduinocli.tar.gz
+
+# Install the board files for the arduino
+./arduino-cli --config-file $script_dir/arduino-cli.yaml core install OpenCR:OpenCR -v
+./arduino-cli --config-file $script_dir/arduino-cli.yaml core update-index
+./arduino-cli --config-file $script_dir/arduino-cli.yaml lib update-index
+
+# Download my fork of OpenCR
+git clone https://github.com/ME495-Navigation/OpenCR -b noetic-raw
+
+# Replace the supplied version of OpenCR with my fork of it
+version=$(ls --color=never arduino/packages/OpenCR/hardware/OpenCR/)
+rm -rf arduino/packages/OpenCR/hardware/OpenCR/$version/libraries
+ln -s $(pwd)/OpenCR/arduino/opencr_arduino/opencr/libraries arduino/packages/OpenCR/hardware/OpenCR/$version/libraries
+
+# compile the "raw" mode, which gives ROS low-level access
+./arduino-cli --config-file ../arduino-cli.yaml compile  --build-path firmware_raw --fqbn OpenCR:OpenCR:OpenCR arduino/packages/OpenCR/hardware/OpenCR/1.4.18/libraries/turtlebot3/examples/turtlebot3_burger/turtlebot3_core/turtlebot3_core.ino -v
+
+# copy the opencr_update and opencr_shell file. These are tools for loading the firmware
+# This step is not strictly necessary, but it provides a clear location for the shell files
+# that we actually use.  It is important that update.sh comes from the noetic-raw branch
+cp ./OpenCR/arduino/opencr_develop/opencr_ld_shell/update.sh ./opencr_update
+cp ./OpenCR/arduino/opencr_develop/opencr_ld_shell/opencr_ld_shell_arm ./opencr_ld_shell
+
+
+# Compile the "original" mode, that is the stock turtlebot firmware
+cd OpenCR
+git switch noetic-orig
+cd ..
+./arduino-cli --config-file ../arduino-cli.yaml compile  --build-path firmware_orig --fqbn OpenCR:OpenCR:OpenCR arduino/packages/OpenCR/hardware/OpenCR/1.4.18/libraries/turtlebot3/examples/turtlebot3_burger/turtlebot3_core/turtlebot3_core.ino -v
+
+# create the opencr firmware files
+./OpenCR/arduino/opencr_develop/opencr_ld_shell/opencr_ld_shell_x86 make firmware_orig/turtlebot3_core.ino.bin burger NU-MSR
+./OpenCR/arduino/opencr_develop/opencr_ld_shell/opencr_ld_shell_x86 make firmware_raw/turtlebot3_core.ino.bin raw-burger NU-RAW
