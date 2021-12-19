@@ -12,8 +12,8 @@ wheel velocities directly on the OpenCR embedded microcontroller, as is the defa
 Must be used in conjunction with the raw OpenCR firmware, which can be built using scripts in this repository.
 
 # Building the Firmware
-These are instructions for how to build the firmware. If your turtlebot3 is already setup, you need not do this, simply having
-this package on your path (or installed) suffices!
+These are instructions for how to build the firmware.  
+*If your turtlebot3 is already setup, you need not do run these commands*
 
 1. Clone the repository into a workspace
 2. Install the dependencies: `rosdep --install --from-paths src --ignore-src -r -y`
