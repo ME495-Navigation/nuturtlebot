@@ -92,4 +92,4 @@ sudo cp -ra ${script_dir}/config_root/ $rootfs
 # unmount
 sudo umount $rootfs/boot/firmware
 sudo umount $rootfs
-losetup -d $loop_dev
+sudo losetup -d $loop_dev

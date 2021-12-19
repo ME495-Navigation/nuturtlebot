@@ -4,3 +4,6 @@
 useradd msr --create-home --groups sudo,adm,video
 echo "source /opt/ros/noetic/setup.bash" >> /home/msr/.bashrc
 rosdep update
+
+# The onetime_init service generates ssh keys on first boot and dumps network info (for debugging purposes) to /etc/network_info.txt
+systemctl enable onetime_init.service
