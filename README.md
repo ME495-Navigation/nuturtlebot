@@ -13,7 +13,7 @@ Must be used in conjunction with the raw OpenCR firmware, which can be built usi
 
 # Building the Firmware
 These are instructions for how to build the firmware.  
-*If your turtlebot3 is already setup, you need not do run these commands*
+**If your turtlebot3 is already setup, you need not run these commands**
 
 1. Clone the repository into a workspace
 2. Install the dependencies: `rosdep --install --from-paths src --ignore-src -r -y`
