@@ -20,6 +20,10 @@ cd $build
 curl -L "https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Linux_64bit.tar.gz" > arduinocli.tar.gz
 tar xf arduinocli.tar.gz
 
+# Generate the rosserial files
+rosrun rosserial_arduino make_libraries.py .
+
+
 # Install the board files for the arduino
 ./arduino-cli --config-file $script_dir/arduino-cli.yaml core install OpenCR:OpenCR -v
 ./arduino-cli --config-file $script_dir/arduino-cli.yaml core update-index
@@ -27,6 +31,16 @@ tar xf arduinocli.tar.gz
 
 # Download my fork of OpenCR
 git clone https://github.com/ME495-Navigation/OpenCR -b noetic-raw
+
+# For various reasons, we need the original ros.h and ArduinoHardware.h, since
+# these files have been modified specifically for OpenCR
+cp OpenCR/arduino/opencr_arduino/opencr/libraries/turtlebot3_ros_lib/ros.h ros_lib/
+cp OpenCR/arduino/opencr_arduino/opencr/libraries/turtlebot3_ros_lib/ArduinoHardware.h ros_lib/
+
+# Update with the latest rosserial libraries
+rm -rf OpenCR/arduino/opencr_arduino/opencr/libraries/turtlebot3_ros_lib
+cp -r ros_lib OpenCR/arduino/opencr_arduino/opencr/libraries/turtlebot3_ros_lib
+
 
 # Replace the supplied version of OpenCR with my fork of it
 version=$(ls --color=never arduino/packages/OpenCR/hardware/OpenCR/)
@@ -45,7 +59,14 @@ cp ./OpenCR/arduino/opencr_develop/opencr_ld_shell/opencr_ld_shell_arm ./opencr_
 
 # Compile the "original" mode, that is the stock turtlebot firmware
 cd OpenCR
+# undo the modifications we've made to the repository
+git clean -fd
+git reset --hard noetic-raw
 git switch noetic-orig
+
+# Update with the latest rosserial libraries
+rm -rf OpenCR/arduino/opencr_arduino/opencr/libraries/turtlebot3_ros_lib
+cp -r ros_lib OpenCR/arduino/opencr_arduino/opencr/libraries/turtlebot3_ros_lib
 cd ..
 ./arduino-cli --config-file ../arduino-cli.yaml compile  --build-path firmware_orig --fqbn OpenCR:OpenCR:OpenCR arduino/packages/OpenCR/hardware/OpenCR/1.4.18/libraries/turtlebot3/examples/turtlebot3_burger/turtlebot3_core/turtlebot3_core.ino -v
 
