@@ -60,11 +60,6 @@ sudo chmod 755 $rootfs/setup_turtle
 sudo proot -q qemu-arm-static -S $rootfs /setup_turtle
 sudo rm $rootfs/setup_turtle
 
-echo "Cleanup Ubuntu"
-sudo cp ${script_dir}/cleanup_ubuntu $rootfs
-sudo chmod 755 $rootfs/cleanup_buntu
-sudo proot -q qemu-arm-static -S $rootfs /cleanup_ubuntu
-sudo rm $rootfs/cleanup_ubuntu
 
 echo "MSR specific setup"
 sudo cp ${script_dir}/setup_msr $rootfs
@@ -85,10 +80,22 @@ sudo cp opencr_firmware/raw-burger.opencr $rootfs/usr/share/opencr
 sudo cp opencr_firmware/opencr_ld_shell $rootfs/usr/bin
 sudo cp opencr_firmware/opencr_update $rootfs/usr/bin
 
+
+echo "Nuturtlebot Installation Ubuntu"
+sudo cp ${script_dir}/setup_nuturtlebot $rootfs
+sudo chmod 755 $rootfs/setup_nuturtlebot
+sudo proot -q qemu-arm-static -S $rootfs /cleanup_ubuntu
+sudo rm $rootfs/cleanup_ubuntu
+
+echo "Cleanup Ubuntu"
+sudo cp ${script_dir}/cleanup_ubuntu $rootfs
+sudo chmod 755 $rootfs/cleanup_buntu
+sudo proot -q qemu-arm-static -S $rootfs /cleanup_ubuntu
+sudo rm $rootfs/cleanup_ubuntu
+
 echo "Copying the final static configuration"
 # Copy over the configuration
 sudo cp -ra ${script_dir}/config_root/* $rootfs
-
 # unmount
 sudo umount $rootfs/boot/firmware
 sudo umount $rootfs

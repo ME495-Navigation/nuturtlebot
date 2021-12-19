@@ -1,0 +1,39 @@
+#!/bin/sh
+# Sets up and installs the nuturtlebot repository
+
+# We need the latest version of CMake to avoid some bugs when running in qemu
+# download the latest version and temporarily uninstall the stock version
+cmake_version=3.21.3-linux-x86_64
+curl -L https://github.com/Kitware/CMake/releases/download/v3.21.3/cmake-${cmake_version}.tar.gz > cmake.tar.gz
+tar xf cmake.tar.gz
+dpkg --remove --force-depends cmake
+cp cmake-${cmake_version}/bin/cmake /usr/bin
+cp -r cmake-${cmake_version}/share/cmake-${cmake_version} /usr/share
+
+# get nuturtlebot
+git clone https://github.com/ME495-Navigation/nuturtlebot.git
+cd nuturtlebot
+source /opt/ros/noetic/setup.sh
+
+# Need rosdep setup correctly in order to bloom
+rosdep update
+rosdep fix-permissions
+
+# remove the ros_gazebo exec_depend
+grep -v gazebo package.xml > package.xml1
+mv package.xml1 package.xml
+bloom-generate rosdebian --ros-distro noetic
+debian/rules binary
+
+# remove cmake, reinstall distributed cmake
+rm -rf /usr/share/cmake*
+rm /usr/bin/cmake
+apt-get install -y cmake
+
+apt-get install -y ../ros-noetic-nuturtlebot_0.0.1-0focal_armhf.deb
+
+# Binary package is installed, delete the source code
+cd ..
+rm -rf nuturtlebot cmake.tar.gz cmake-${cmake_version} ros-noetic-nuturtlebot_0.0.1-0focal_armhf.deb
+
+
