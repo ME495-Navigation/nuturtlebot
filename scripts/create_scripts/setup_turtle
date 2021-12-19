@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# Setup some turtlebot packages now
+apt-get update \
+ && apt-get install -y \
+        ros-noetic-turtlebot3 \
+        ros-noetic-gmapping \
+        ros-noetic-hls-lfcd-lds-driver \
+        ros-noetic-image-proc \
+        ros-noetic-navigation \
+        ros-noetic-usb-cam \
+        ros-noetic-slam-toolbox \
+        ros-noetic-turtlesim 
+. /opt/ros/noetic/setup.sh
+rosrun turtlebot3_bringup create_udev_rules

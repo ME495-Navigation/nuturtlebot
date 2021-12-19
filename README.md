@@ -11,9 +11,36 @@ wheel velocities directly on the OpenCR embedded microcontroller, as is the defa
 
 Must be used in conjunction with the raw OpenCR firmware, which can be built using scripts in this repository.
 
+# Usage
+1. There are two types of users: Those who need ROS access to raw turtlebot signals, and those building custom turtlebot3 images
+2. If you need access to raw turtlebot signals, and your turtlebot already has the appropriate firmware installed, then this package
+   just provides some message types, and you only need to have it on your ROS path (either by cloning it into your workspace or installing it).
+3. Read on if you'd like to build the firmware or the custom Northwestern turtlebot image (NU/MSR students need not do these steps!)
+
+# Building the Nuturtlebot Image
+These instructions explain how to build a  custom SDCard  image for the turtlebot3.
+**If your turtlebot3 is already set up, you need not run these commands**
+
+1. Run [scripts/create_image](scripts/create_image) to create the basic image.
+   - Can be run as `rosrun nuturtlebot create_image` and will create a file called `build/turtlebot_image/turtlebot.img` that can be written to the SD card.
+   - This script automatically builds both versions of the opencr firmware
+2. Run [scripts/write_image](scripts/write_image) to write the image to the sd_card.
+   - This script allows each image written to be customized for a specific robot
+   - Should be invoked as `rosrun nuturtlebot write_image <image> <sdcard> <name> <pubkey> <nmcon> [robotdns]`
+     - `<image>`: Path to the image file (e.g., `build/turtlebot_image/turtlebot.img`)
+     - `<sdcard>`: Path to the sdcard device (e.g. `/dev/mmcblk0`)
+     - `<name>`: The hostname for the turtlebot. Each turtlebot on your network should have a unique hostname
+     - `<pubkey>`: An ssh public key that will let the people with the corresponding private key to logon as the `msr` user
+     - `<nmcon>`: A network-manager connection file, corresponding to the network the turtlebot should connect to.
+       - Can specify the full path or will search for a file called /etc/NetworkManager/system-connections/<nmcon>.nmconnection
+       - If you are connected to the same wifi network you want to use, <nmcon> can usually be the SSID of that network
+     - `<robotdns>` (optional): The [robotdns](https://github.com/m-elwin/robotdns) server location, if being used.
+       - robotdns is a dynamic DNS server that allows all robots to communicate via hostnames even when we do not control the LAN settings (e.g., are on a corporate network).
+       - For this option to work, the `<nmcon>` must be a network profile created by robotdns and be named `network.robot.nmconnection`.
+         
 # Building the Firmware
-These are instructions for how to build the firmware.  
-**If your turtlebot3 is already setup, you need not run these commands**
+These are instructions for how to build the firmware, which is automatically done when building the SDCard image, but can be done separately.  
+**If your turtlebot3 is already set up, you need not run these commands**
 
 1. Clone the repository into a workspace
 2. Install the dependencies: `rosdep --install --from-paths src --ignore-src -r -y`

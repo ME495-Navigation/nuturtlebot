@@ -1,0 +1,10 @@
+[Unit]
+Description=Generate SSH keys
+Before=ssh.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/onetime_init
+
+[Install]
+WantedBy=multi-user.target

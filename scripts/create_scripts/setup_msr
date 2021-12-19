@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# Create the MSR user and setup their bashrc
+useradd msr --create-home --groups sudo,adm,video
+echo "source /opt/ros/noetic/setup.bash" >> /home/msr/.bashrc
+rosdep update

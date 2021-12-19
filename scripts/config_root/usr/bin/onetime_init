@@ -1,0 +1,4 @@
+#!/bin/sh
+ssh-keygen -A
+ip a > /etc/network_info.txt
+systemctl disable onetime_init.service

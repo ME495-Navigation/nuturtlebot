@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+# Creates a turtlebot3 image suitable for MSR
+# Assumes that the firmware has already been generated, and it is checked into this repository
+# as a binary artificat for convenience.
+
+# Get the location of this script
+script=$(readlink -f "$0")
+script_dir=$(dirname "$script")
+
+# ---- Setup Script Parameters ----
+# Build Directory
+
+# Create the build directory (as optionally specified by the first argument)
+if [ -z "$1" ]
+then
+    build_dir=build/turtlebot_image
+else
+    build_dir="$1"
+fi
+mkdir -p $build_dir
+cd $build_dir
+
+# The image file name
+image=turtle.img
+
+# The directory containing the root file system for the raspberry pi
+rootfs=raspi_root
+
+echo "Installing the pre-requisite packages"
+sudo apt-get update && sudo apt-get install qemu-user-static proot binfmt-support xz-utils
+
+echo "Downloading the raspberry pi ubuntu image"
+curl -L "https://cdimage.ubuntu.com/releases/20.04.3/release/ubuntu-20.04.3-preinstalled-server-armhf+raspi.img.xz" | unxz > $image
+
+echo "Preparing the disk image"
+# Expand the size of the image file
+truncate -s 8GB $image
+# Expand the second partion within the image file
+parted $image resizepart 2 100%
+# mount the image on loop device
+loop_dev=$(sudo losetup --show -Pf $image)
+# Resize the filesystem to fit the expanded partion:
+sudo e2fsck -f ${loop_dev}p2
+sudo resize2fs ${loop_dev}p2
+
+echo "Mounting the disk image"
+mkdir -p $rootfs
+sudo mount ${loop_dev}p2 $rootfs
+sudo mount ${loop_dev}p1 $rootfs/boot/firmware
+
+echo "Basic ROS setup"
+sudo cp ${script_dir}/create_scripts/setup_ros $rootfs
+sudo chmod 755 $rootfs/setup_ros
+sudo proot -q qemu-arm-static -S $rootfs /setup_ros
+sudo rm $rootfs/setup_ros
+
+echo "Turtlebot3 Setup"
+sudo cp ${script_dir}/create_scripts/setup_turtle $rootfs
+sudo chmod 755 $rootfs/setup_turtle
+sudo proot -q qemu-arm-static -S $rootfs /setup_turtle
+sudo rm $rootfs/setup_turtle
+
+echo "Cleanup Ubuntu"
+sudo cp ${script_dir}/cleanup_ubuntu $rootfs
+sudo chmod 755 $rootfs/cleanup_buntu
+sudo proot -q qemu-arm-static -S $rootfs /cleanup_ubuntu
+sudo rm $rootfs/cleanup_ubuntu
+
+echo "MSR specific setup"
+sudo cp ${script_dir}/setup_msr $rootfs
+sudo chmod 755 $rootfs/setup_msr
+sudo proot -q qemu-arm-static -S $rootfs /setup_msr
+sudo rm $rootfs/setup_msr
+
+echo "Installing robotdns scripts"
+curl -L "https://raw.githubusercontent.com/m-elwin/robotdns/main/21-robotdns-register.sh" | sudo tee $rootfs/etc/NetworkManager/dispatcher.d/21-robotdns-register.sh
+sudo chmod 500 $rootfs/etc/NetworkManager/dispatcher.d/21-robotdns-register.sh
+
+echo "Building the firmware. When booted, you can install the firmware with 'opencr_update stock' OR 'opencr_update raw'"
+${script_dir}/build_firmware opencr_firmware
+# copy the firmware files to the image
+sudo mkdir $rootfs/usr/share/opencr
+sudo cp opencr_firmware/burger.opencr $rootfs/usr/share/opencr
+sudo cp opencr_firmware/raw-burger.opencr $rootfs/usr/share/opencr
+sudo cp opencr_firmware/opencr_ld_shell $rootfs/usr/bin
+sudo cp opencr_firmware/opencr_update $rootfs/usr/bin
+
+echo "Copying the final static configuration"
+# Copy over the configuration
+sudo cp -ra ${script_dir}/config_root/ $rootfs
+
+# unmount
+sudo umount $rootfs/boot/firmware
+sudo umount $rootfs
+losetup -d $loop_dev

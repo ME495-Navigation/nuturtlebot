@@ -1,0 +1,94 @@
+#!/bin/sh
+# Write the turtlebot3 image to desk and
+# perform post-writing steps that do not require a boot
+# TODO: Make a good interface for this script
+
+
+# The raspberry pi image location
+raspi_image=$1
+
+# The sdcard device (e.g. /dev/mmcblk0).
+sdcard_dev=$2
+
+# Hostname for the turtlebot
+turtlebot_name=$3
+
+# Public key, used to access the turtlebot
+public_key=$4
+
+# The network connection profile. If it is called <something>.robot.nmconnection it will use 
+# robotdns (https://github.com/m-elwin/robotdns)
+if [ -f "$5" ] # if the specified file does not exist, search in /etc/NetworkManager/system-connections
+then
+    nmconnection=$5
+else
+    nmconnection="/etc/NetworkManager/system-connections/${5}.nmconnection"
+fi
+
+# The address of the robotdns server (or blank if not using robotdns).
+# If using robotdns, the network connection profile must already be a valid robotdns profile and be named <something>.robot.nmconnection
+robotdns=$6
+
+
+# compute the partitions of the device.
+# naming convention depends on if they end
+# in a letter or a number. 
+if [ $(expr ${sdcard_dev} : '.*[0-9]') == 0 ]
+then
+    # block device name not end in number
+    sdcard_bootpart=${sdcard_dev}1
+    sdcard_ospart=${sdcard_dev}2
+else
+    # block device name ends in number
+    sdcard_bootpart=${sdcard_dev}p1
+    sdcard_ospart=${sdcard_dev}p2
+fi
+
+sudo umount $sdcard_bootpart 
+sudo umount $sdcard_ospart 
+
+echo "Writing the image (takes some time)"
+sudo dd bs=4M if=$raspi_image of=$sdcard_dev conv=fsync oflag=direct status=progress
+
+echo "Expanding partition"
+sudo parted $sdcard_dev resizepart 2 100%
+sudo e2fsck -fy $sdcard_ospart
+sudo resize2fs $sdcard_ospart
+
+echo "Mounting the sd card"
+mkdir -p /tmp/raspi
+sudo mount $sdcard_ospart /tmp/raspi
+
+echo "Setting hostname to $turtlebot_name"
+echo $turtlebot_name | sudo tee /tmp/raspi/etc/hostname
+echo "127.0.1.1 $turtlebot_name" | sudo tee -a /tmp/raspi/etc/hosts
+
+echo "Copying the public key"
+sudo mkdir -p /tmp/raspi/home/msr/.ssh
+sudo cp $public_key /tmp/raspi/home/msr/.ssh/authorized_keys
+
+# Install the network connection, while automatically removing uuid or wifi interface names
+echo "Installing the network connection profile"
+robot_nmfile=/tmp/raspi/etc/NetworkManager/system-connections/$(basename $nmconnection)
+sudo grep -v "uuid=\|interface-name=" $nmconnection > $robot_nmfile
+sudo chmod 600 $robot_nmfile
+
+if [ ! -z "$robotdns" ]
+then
+    # create the settings file
+    echo "export nmconnect $nmconnection" > ${robot_nmfile}.settings
+    echo "export dnshost $robotdns" >> ${robot_nmfile}.settings
+    echo "export user_home /home/msr" >> ${robot_nmfile}.settings
+    sudo chmod 600 ${robot_nmfile}.settings
+
+    # Generate the ssh key and install it
+    ssh-keygen -t ed25519 -C $turtlebot_name -f /tmp/id_robotdns -q -N ""
+    sudo mv /tmp/id_robotdns $rootfs/home/msr/.ssh/
+    sudo cp /tmp/id_robotdns.pub $rootfs/home/msr/.ssh/
+
+    # install the fingerprint
+    ssh-keyscan -H $robotnds | sudo tee $rootfs/home/msr/.ssh/known_hosts
+    echo "Send /tmp/id_robotdns.pub to your system administrator so the robot can access the robotdns server"
+fi
+
+sudo umount /tmp/raspi
