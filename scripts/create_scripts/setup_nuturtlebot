@@ -3,12 +3,18 @@
 
 # We need the latest version of CMake to avoid some bugs when running in qemu
 # download the latest version and temporarily uninstall the stock version
-cmake_version=3.21.3
-curl -L https://github.com/Kitware/CMake/releases/download/v3.21.3/cmake-${cmake_version}-linux-x86_64.tar.gz > cmake.tar.gz
+# cmake_maj.cmake_min.cmake_rev is the cmake version number
+cmake_maj=3 # cmake major version
+cmake_min=21 # cmake minor version
+cmake_rev=3 #cmake revision.
+cmake_version=${cmake_maj}.${cmake_min}
+cmake_version_full=${cmake_version}.${cmake_rev}
+cmake_minor_version=3
+curl -L https://github.com/Kitware/CMake/releases/download/v${cmake_version_full}/cmake-${cmake_version_full}-linux-x86_64.tar.gz > cmake.tar.gz
 tar xf cmake.tar.gz
 dpkg --remove --force-depends cmake
-cp cmake-${cmake_version}/bin/cmake /usr/bin
-cp -r cmake-${cmake_version}/share/cmake-${cmake_version} /usr/share
+cp cmake-${cmake_version_full}-linux-x86_64/bin/cmake /usr/bin
+cp -r cmake-${cmake_version_full}-linux-x86_64/share/cmake-${cmake_version} /usr/share
 
 # get nuturtlebot
 git clone https://github.com/ME495-Navigation/nuturtlebot.git
@@ -34,6 +40,6 @@ apt-get install --no-install-recommends --no-install-suggests -y ../ros-noetic-n
 
 # Binary package is installed, delete the source code
 cd ..
-rm -rf nuturtlebot cmake.tar.gz cmake-${cmake_version} ros-noetic-nuturtlebot_0.0.1-0focal_armhf.deb
+rm -rf nuturtlebot cmake.tar.gz cmake-${cmake_version_full}-linux-x86_64 ros-noetic-nuturtlebot_0.0.1-0focal_armhf.deb
 
 
