@@ -33,7 +33,7 @@ robotdns=$6
 # compute the partitions of the device.
 # naming convention depends on if they end
 # in a letter or a number. 
-if [ $(expr ${sdcard_dev} : '.*[0-9]') == 0 ]
+if [ $(expr ${sdcard_dev} : '.*[0-9]') = 0 ]
 then
     # block device name not end in number
     sdcard_bootpart=${sdcard_dev}1
@@ -70,25 +70,26 @@ sudo cp $public_key /tmp/raspi/home/msr/.ssh/authorized_keys
 # Install the network connection, while automatically removing uuid or wifi interface names
 echo "Installing the network connection profile"
 robot_nmfile=/tmp/raspi/etc/NetworkManager/system-connections/$(basename $nmconnection)
-sudo grep -v "uuid=\|interface-name=" $nmconnection > $robot_nmfile
+sudo grep -v "uuid=\|interface-name=" $nmconnection | sudo tee $robot_nmfile
 sudo chmod 600 $robot_nmfile
 
 if [ ! -z "$robotdns" ]
 then
     # create the settings file
-    echo "export nmconnect $nmconnection" > ${robot_nmfile}.settings
-    echo "export dnshost $robotdns" >> ${robot_nmfile}.settings
-    echo "export user_home /home/msr" >> ${robot_nmfile}.settings
+    echo "export nmconnect $nmconnection" | sudo tee ${robot_nmfile}.settings
+    echo "export dnshost $robotdns" | sudo tee -a ${robot_nmfile}.settings
+    echo "export user_home /home/msr" | sudo tee -a ${robot_nmfile}.settings
     sudo chmod 600 ${robot_nmfile}.settings
 
-    # Generate the ssh key and install it
+    # Generate the ssh key and install i
+    rm /tmp/id_robotdns.pub /tmp/id_robotdns
     ssh-keygen -t ed25519 -C $turtlebot_name -f /tmp/id_robotdns -q -N ""
-    sudo mv /tmp/id_robotdns $rootfs/home/msr/.ssh/
-    sudo cp /tmp/id_robotdns.pub $rootfs/home/msr/.ssh/
+    sudo mv /tmp/id_robotdns /tmp/raspi/home/msr/.ssh/
+    sudo cp /tmp/id_robotdns.pub /tmp/raspi/home/msr/.ssh/
 
     # install the fingerprint
-    ssh-keyscan -H $robotnds | sudo tee $rootfs/home/msr/.ssh/known_hosts
-    echo "Send /tmp/id_robotdns.pub to your system administrator so the robot can access the robotdns server"
+    ssh-keyscan -H $robotdns | sudo tee /tmp/raspi/home/msr/.ssh/known_hosts
+    echo "Send sdcard/home/msr/.ssh/id_robotdns.pub to your system administrator so the robot can access the robotdns server"
 fi
 
 sudo umount /tmp/raspi
