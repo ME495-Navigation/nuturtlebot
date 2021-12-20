@@ -27,12 +27,12 @@ These instructions explain how to build a  custom SDCard  image for the turtlebo
 2. Run [scripts/write_image](scripts/write_image) to write the image to the sd_card.
    - This script allows each image written to be customized for a specific robot
    - Should be invoked as `rosrun nuturtlebot write_image <image> <sdcard> <name> <pubkey> <nmcon> [robotdns]`
-     - `<image>`: Path to the image file (e.g., `build/turtlebot_image/turtlebot.img`)
+     - `<image>`: Path to the image file (e.g., `build/turtlebot_image/turtle.img`)
      - `<sdcard>`: Path to the sdcard device (e.g. `/dev/mmcblk0`)
      - `<name>`: The hostname for the turtlebot. Each turtlebot on your network should have a unique hostname
      - `<pubkey>`: An ssh public key that will let the people with the corresponding private key to logon as the `msr` user
      - `<nmcon>`: A network-manager connection file, corresponding to the network the turtlebot should connect to.
-       - Can specify the full path or will search for a file called /etc/NetworkManager/system-connections/<nmcon>.nmconnection
+       - Can specify the full path or will search for a file called `/etc/NetworkManager/system-connections/<nmcon>.nmconnection`
        - If you are connected to the same wifi network you want to use, <nmcon> can usually be the SSID of that network
      - `<robotdns>` (optional): The [robotdns](https://github.com/m-elwin/robotdns) server location, if being used.
        - robotdns is a dynamic DNS server that allows all robots to communicate via hostnames even when we do not control the LAN settings (e.g., are on a corporate network).
