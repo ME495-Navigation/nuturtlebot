@@ -3,8 +3,8 @@
 
 # We need the latest version of CMake to avoid some bugs when running in qemu
 # download the latest version and temporarily uninstall the stock version
-cmake_version=3.21.3-linux-x86_64
-curl -L https://github.com/Kitware/CMake/releases/download/v3.21.3/cmake-${cmake_version}.tar.gz > cmake.tar.gz
+cmake_version=3.21.3
+curl -L https://github.com/Kitware/CMake/releases/download/v3.21.3/cmake-${cmake_version}-linux-x86_64.tar.gz > cmake.tar.gz
 tar xf cmake.tar.gz
 dpkg --remove --force-depends cmake
 cp cmake-${cmake_version}/bin/cmake /usr/bin
@@ -13,7 +13,7 @@ cp -r cmake-${cmake_version}/share/cmake-${cmake_version} /usr/share
 # get nuturtlebot
 git clone https://github.com/ME495-Navigation/nuturtlebot.git
 cd nuturtlebot
-source /opt/ros/noetic/setup.sh
+. /opt/ros/noetic/setup.sh
 
 # Need rosdep setup correctly in order to bloom
 rosdep update

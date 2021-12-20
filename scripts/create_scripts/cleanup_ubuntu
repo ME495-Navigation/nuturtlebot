@@ -21,3 +21,5 @@ apt-mark manual squashfs-tools
 
 apt-get autoremove -y
 apt-get upgrade -y
+
+rm -rf /etc/cloud/cloud.cfg.d

@@ -89,7 +89,7 @@ sudo rm $rootfs/setup_nuturtlebot
 
 echo "Cleanup Ubuntu"
 sudo cp ${script_dir}/create_scripts/cleanup_ubuntu $rootfs
-sudo chmod 755 $rootfs/cleanup_buntu
+sudo chmod 755 $rootfs/cleanup_ubuntu
 sudo proot -q qemu-arm-static -S $rootfs /cleanup_ubuntu
 sudo rm $rootfs/cleanup_ubuntu
 
