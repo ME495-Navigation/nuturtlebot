@@ -81,7 +81,7 @@ then
     echo "export user_home /home/msr" | sudo tee -a ${robot_nmfile}.settings
     sudo chmod 600 ${robot_nmfile}.settings
 
-    # Generate the ssh key and install i
+    # Generate the ssh key and install it
     rm /tmp/id_robotdns.pub /tmp/id_robotdns
     ssh-keygen -t ed25519 -C $turtlebot_name -f /tmp/id_robotdns -q -N ""
     sudo mv /tmp/id_robotdns /tmp/raspi/home/msr/.ssh/

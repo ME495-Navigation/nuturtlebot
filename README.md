@@ -34,11 +34,12 @@ You need to be root to do this. It is a TODO to lower the permission requirement
      - `<pubkey>`: An ssh public key that will let the people with the corresponding private key to logon as the `msr` user
      - `<nmcon>`: A network-manager connection file, corresponding to the network the turtlebot should connect to.
        - Can specify the full path or will search for a file called `/etc/NetworkManager/system-connections/<nmcon>.nmconnection`
-       - If you are connected to the same wifi network you want to use, <nmcon> can usually be the SSID of that network
+       - If you are connected to the same wifi network you want to use, <nmcon> can usually be the SSID of that network. The profile
+         will be written to the SDCard in a way that will work with the target hardware.
      - `<robotdns>` (optional): The [robotdns](https://github.com/m-elwin/robotdns) server location, if being used.
        - robotdns is a dynamic DNS server that allows all robots to communicate via hostnames even when we do not control the LAN settings (e.g., are on a corporate network).
-       - For this option to work, the `<nmcon>` must be a network profile created by robotdns and be named `network.robot.nmconnection`.
-         
+       - For this option to work, the `<nmcon>` must be a network profile created by the robotdns setup and be named `network.robot.nmconnection`.
+
 # Building the Firmware
 These are instructions for how to build the firmware, which is automatically done when building the SDCard image, but can be done separately.  
 **If your turtlebot3 is already set up, you need not run these commands**
