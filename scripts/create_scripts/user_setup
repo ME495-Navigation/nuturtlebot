@@ -1,4 +1,0 @@
-#!/bin/sh
-useradd msr --create-home --groups msr,sudo,adm,video
-echo "source /opt/ros/noetic/setup.bash" >> /home/msr/.bashrc
-passwd msr

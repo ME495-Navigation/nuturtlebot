@@ -29,6 +29,9 @@ fi
 # If using robotdns, the network connection profile must already be a valid robotdns profile and be named <something>.robot.nmconnection
 robotdns=$6
 
+# user id of the msr user. This is always the same when we create the image, and we need it to change ownership
+# (or we'd have to proot in)
+msr_uid=1000
 
 # compute the partitions of the device.
 # naming convention depends on if they end
@@ -66,6 +69,7 @@ echo "127.0.1.1 $turtlebot_name" | sudo tee -a /tmp/raspi/etc/hosts
 echo "Copying the public key"
 sudo mkdir -p /tmp/raspi/home/msr/.ssh
 sudo cp $public_key /tmp/raspi/home/msr/.ssh/authorized_keys
+sudo chown $msr_uid:$msr_uid /tmp/raspi/home/msr/.ssh/authorized_keys
 
 # Install the network connection, while automatically removing uuid or wifi interface names
 echo "Installing the network connection profile"
@@ -82,13 +86,16 @@ then
     sudo chmod 600 ${robot_nmfile}.settings
 
     # Generate the ssh key and install it
-    rm /tmp/id_robotdns.pub /tmp/id_robotdns
+    rm -f /tmp/id_robotdns.pub /tmp/id_robotdns
     ssh-keygen -t ed25519 -C $turtlebot_name -f /tmp/id_robotdns -q -N ""
     sudo mv /tmp/id_robotdns /tmp/raspi/home/msr/.ssh/
     sudo cp /tmp/id_robotdns.pub /tmp/raspi/home/msr/.ssh/
+    sudo chown $msr_uid:$msr_uid /tmp/raspi/home/msr/.ssh/id_robotdns
+    sudo chown $msr_uid:$msr_uid /tmp/raspi/home/msr/.ssh/id_robotdns.pub
 
     # install the fingerprint
     ssh-keyscan -H $robotdns | sudo tee /tmp/raspi/home/msr/.ssh/known_hosts
+    sudo chown $msr_uid:$msr_uid /tmp/raspi/home/msr/.ssh/known_hosts
     echo "Send sdcard/home/msr/.ssh/id_robotdns.pub to your system administrator so the robot can access the robotdns server"
 fi
 
