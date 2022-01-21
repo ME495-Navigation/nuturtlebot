@@ -21,7 +21,7 @@ Must be used in conjunction with the raw OpenCR firmware, which can be built usi
 These instructions explain how to build a  custom SDCard  image for the turtlebot3.
 You need to be root to do this. It is a TODO to lower the permission requirements
 **If your turtlebot3 is already set up, you need not run these commands**
-
+0. Install the prequisites: =apt install qemu-user-static proot binfmt-support xz-utils=
 1. Run [scripts/create_image](scripts/create_image) to create the basic image.
    - Can be run as `rosrun nuturtlebot create_image` and will create a file called `build/turtlebot_image/turtlebot.img` that can be written to the SD card.
    - This script automatically builds both versions of the opencr firmware

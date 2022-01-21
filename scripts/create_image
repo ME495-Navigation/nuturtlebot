@@ -26,9 +26,6 @@ image=turtle.img
 # The directory containing the root file system for the raspberry pi
 rootfs=raspi_root
 
-echo "Installing the pre-requisite packages"
-sudo apt-get update && sudo apt-get install qemu-user-static proot binfmt-support xz-utils
-
 echo "Downloading the raspberry pi ubuntu image"
 curl -L "https://cdimage.ubuntu.com/releases/20.04.3/release/ubuntu-20.04.3-preinstalled-server-armhf+raspi.img.xz" | unxz > $image
 
@@ -37,6 +34,9 @@ echo "Preparing the disk image"
 truncate -s 8GB $image
 # Expand the second partion within the image file
 parted $image resizepart 2 100%
+
+
+exit 
 # mount the image on loop device
 loop_dev=$(sudo losetup --show -Pf $image)
 # Resize the filesystem to fit the expanded partion:
