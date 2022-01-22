@@ -80,9 +80,9 @@ sudo chmod 600 $robot_nmfile
 if [ ! -z "$robotdns" ]
 then
     # create the settings file
-    echo "export nmconnect $(basename nmconnection)" | sudo tee ${robot_nmfile}.settings
-    echo "export dnshost $robotdns" | sudo tee -a ${robot_nmfile}.settings
-    echo "export user_home /home/msr" | sudo tee -a ${robot_nmfile}.settings
+    echo "export nmconnect=$(basename $nmconnection | cut -d'.' -f 1)" | sudo tee ${robot_nmfile}.settings
+    echo "export dnshost=$robotdns" | sudo tee -a ${robot_nmfile}.settings
+    echo "export user_home=/home/msr" | sudo tee -a ${robot_nmfile}.settings
     sudo chmod 600 ${robot_nmfile}.settings
 
     # Generate the ssh key and install it
