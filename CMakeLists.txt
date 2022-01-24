@@ -3,10 +3,6 @@ project(nuturtlebot)
 
 find_package(catkin REQUIRED COMPONENTS )
 
-generate_messages(
-  DEPENDENCIES
-)
-
 catkin_package()
 
 install(PROGRAMS  scripts/build_firmware
