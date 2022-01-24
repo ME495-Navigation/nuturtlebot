@@ -16,18 +16,15 @@ dpkg --remove --force-depends cmake
 cp cmake-${cmake_version_full}-linux-x86_64/bin/cmake /usr/bin
 cp -r cmake-${cmake_version_full}-linux-x86_64/share/cmake-${cmake_version} /usr/share
 
-# get nuturtlebot
-git clone https://github.com/ME495-Navigation/nuturtlebot.git
-cd nuturtlebot
+# get nuturtlebot messages
+git clone https://github.com/ME495-Navigation/nuturtlebot_msgs.git
+cd nuturtlebot_msgs
 . /opt/ros/noetic/setup.sh
 
 # Need rosdep setup correctly in order to bloom
 rosdep update
 rosdep fix-permissions
 
-# remove the ros_gazebo exec_depend
-grep -v gazebo package.xml > package.xml1
-mv package.xml1 package.xml
 bloom-generate rosdebian --ros-distro noetic
 debian/rules binary
 
@@ -36,10 +33,10 @@ rm -rf /usr/share/cmake*
 rm /usr/bin/cmake
 apt-get install -y cmake
 
-apt-get install --no-install-recommends --no-install-suggests -y ../ros-noetic-nuturtlebot_0.0.1-0focal_armhf.deb
+apt-get install --no-install-recommends --no-install-suggests -y ../ros-noetic-nuturtlebot-msgs_0.0.1-0focal_armhf.deb
 
 # Binary package is installed, delete the source code
 cd ..
-rm -rf nuturtlebot cmake.tar.gz cmake-${cmake_version_full}-linux-x86_64 ros-noetic-nuturtlebot_0.0.1-0focal_armhf.deb
+rm -rf nuturtlebot cmake.tar.gz cmake-${cmake_version_full}-linux-x86_64 ros-noetic-nuturtlebot-msgs_0.0.1-0focal_armhf.deb
 
 

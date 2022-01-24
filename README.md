@@ -65,5 +65,7 @@ These are instructions for how to build the firmware, which is automatically don
 
 # Building the Debian Package
 1. For easy deployment, this package can be built into a binary debian package
-2. By default, catkin_make_install does not do any installation steps, this is so `nuturtlebot` can be used for its message definitions
-   - (TODO: put the message definitions in a separate package)
+2. This process uses `bloom` but also specifies some custom flags
+3. Use `rosrun nuturtlebot build_deb` to build the debian package
+   - This package is quite large since it contains a full image for cross-compiling purposes
+   - If you just need the m

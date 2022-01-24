@@ -1,19 +1,13 @@
 cmake_minimum_required(VERSION 3.0.9)
 project(nuturtlebot)
 
-find_package(catkin REQUIRED COMPONENTS message_generation turtlebot3_msgs)
-
-add_message_files(
-   FILES
-   SensorData.msg
-   WheelCommands.msg
-)
+find_package(catkin REQUIRED COMPONENTS )
 
 generate_messages(
   DEPENDENCIES
 )
 
-catkin_package(CATKIN_DEPENDS message_runtime turtlebot3_msgs)
+catkin_package()
 
 install(PROGRAMS  scripts/build_firmware
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
