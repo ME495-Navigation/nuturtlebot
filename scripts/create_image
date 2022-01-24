@@ -45,7 +45,7 @@ loop_dev=$(sudo losetup --show -Pf $image)
 
 
 # Resize the filesystem to fit the expanded partion:
-sudo e2fsck -f ${loop_dev}p2
+sudo e2fsck -y -f ${loop_dev}p2
 sudo resize2fs ${loop_dev}p2
 
 echo "Mounting the disk image"

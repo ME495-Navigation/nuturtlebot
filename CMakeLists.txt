@@ -5,7 +5,9 @@ find_package(catkin REQUIRED COMPONENTS )
 
 catkin_package()
 
-install(PROGRAMS  scripts/build_firmware
+add_custom_target(raspi_image ALL COMMAND ${CMAKE_CURRENT_LIST_DIR}/scripts/create_image)
+
+install(PROGRAMS  scripts/build_firmware scripts/create_image scripts/write_image
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
    )
 

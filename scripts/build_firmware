@@ -20,7 +20,7 @@ cd $build
 curl -L "https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Linux_64bit.tar.gz" > arduinocli.tar.gz
 tar xf arduinocli.tar.gz
 
-# Generate the rosserial files
+# Generate the rosserial files, in a directory called ros_lib
 rosrun rosserial_arduino make_libraries.py .
 
 
@@ -48,7 +48,7 @@ rm -rf arduino/packages/OpenCR/hardware/OpenCR/$version/libraries
 ln -s $(pwd)/OpenCR/arduino/opencr_arduino/opencr/libraries arduino/packages/OpenCR/hardware/OpenCR/$version/libraries
 
 # compile the "raw" mode, which gives ROS low-level access
-./arduino-cli --config-file ../arduino-cli.yaml compile  --build-path firmware_raw --fqbn OpenCR:OpenCR:OpenCR arduino/packages/OpenCR/hardware/OpenCR/1.4.18/libraries/turtlebot3/examples/turtlebot3_burger/turtlebot3_core/turtlebot3_core.ino -v
+./arduino-cli --config-file $script_dir/arduino-cli.yaml compile  --build-path firmware_raw --fqbn OpenCR:OpenCR:OpenCR arduino/packages/OpenCR/hardware/OpenCR/1.4.18/libraries/turtlebot3/examples/turtlebot3_burger/turtlebot3_core/turtlebot3_core.ino -v
 
 # copy the opencr_update and opencr_shell file. These are tools for loading the firmware
 # This step is not strictly necessary, but it provides a clear location for the shell files
@@ -68,7 +68,7 @@ git switch noetic-orig
 rm -rf OpenCR/arduino/opencr_arduino/opencr/libraries/turtlebot3_ros_lib
 cp -r ros_lib OpenCR/arduino/opencr_arduino/opencr/libraries/turtlebot3_ros_lib
 cd ..
-./arduino-cli --config-file ../arduino-cli.yaml compile  --build-path firmware_orig --fqbn OpenCR:OpenCR:OpenCR arduino/packages/OpenCR/hardware/OpenCR/1.4.18/libraries/turtlebot3/examples/turtlebot3_burger/turtlebot3_core/turtlebot3_core.ino -v
+./arduino-cli --config-file $script_dir/arduino-cli.yaml compile  --build-path firmware_orig --fqbn OpenCR:OpenCR:OpenCR arduino/packages/OpenCR/hardware/OpenCR/1.4.18/libraries/turtlebot3/examples/turtlebot3_burger/turtlebot3_core/turtlebot3_core.ino -v
 
 # create the opencr firmware files
 ./OpenCR/arduino/opencr_develop/opencr_ld_shell/opencr_ld_shell_x86 make firmware_orig/turtlebot3_core.ino.bin burger NU-MSR
