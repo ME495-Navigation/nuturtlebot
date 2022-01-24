@@ -15,9 +15,5 @@
   <buildtool_depend>catkin</buildtool_depend>
   <exec_depend>rosserial_arduino</exec_depend>
   <depend>turtlebot3_msgs</depend>
-  <export>
-    <gazebo_ros
-        gazebo_model_path="${prefix}/models"
-        gazebo_media_path="${prefix}/models" />
-  </export>
+  <exec_depend>nuturtlebot_msgs</exec_depend>
 </package>
