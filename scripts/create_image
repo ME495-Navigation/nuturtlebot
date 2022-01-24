@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 # Creates a turtlebot3 image suitable for MSR
-# Assumes that the firmware has already been generated, and it is checked into this repository
-# as a binary artificat for convenience.
 
 # Get the location of this script
 script=$(readlink -f "$0")
