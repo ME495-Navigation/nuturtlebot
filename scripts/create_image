@@ -53,27 +53,27 @@ mkdir -p $rootfs
 sudo mount ${loop_dev}p2 $rootfs
 sudo mount ${loop_dev}p1 $rootfs/boot/firmware
 
-# Fix the resolve conf for chroot
+# Fix the resolve conf for proot -q qemu-arm-static -S
 sudo mv $rootfs/etc/resolv.conf $rootfs/etc/resolve.conf.orig
 sudo cp /etc/resolv.conf $rootfs/etc/resolv.conf
 
 echo "Basic ROS setup"
 sudo cp ${script_dir}/create_scripts/setup_ros $rootfs
 sudo chmod 755 $rootfs/setup_ros
-sudo chroot $rootfs /setup_ros
+sudo proot -q qemu-arm-static -S $rootfs /setup_ros
 sudo rm $rootfs/setup_ros
 
 echo "Turtlebot3 Setup"
 sudo cp ${script_dir}/create_scripts/setup_turtle $rootfs
 sudo chmod 755 $rootfs/setup_turtle
-sudo chroot $rootfs /setup_turtle
+sudo proot -q qemu-arm-static -S $rootfs /setup_turtle
 sudo rm $rootfs/setup_turtle
 
 
 echo "MSR specific setup"
 sudo cp ${script_dir}/create_scripts/setup_msr $rootfs
 sudo chmod 755 $rootfs/setup_msr
-sudo chroot $rootfs /setup_msr
+sudo proot -q qemu-arm-static -S $rootfs /setup_msr
 sudo rm $rootfs/setup_msr
 
 echo "Installing robotdns scripts"
@@ -93,21 +93,18 @@ sudo cp opencr_firmware/opencr_update $rootfs/usr/bin
 echo "Nuturtlebot Installation Ubuntu"
 sudo cp ${script_dir}/create_scripts/setup_nuturtlebot $rootfs
 sudo chmod 755 $rootfs/setup_nuturtlebot
-sudo chroot $rootfs /setup_nuturtlebot
+sudo proot -q qemu-arm-static -S $rootfs /setup_nuturtlebot
 sudo rm $rootfs/setup_nuturtlebot
 
 echo "Cleanup Ubuntu"
 sudo cp ${script_dir}/create_scripts/cleanup_ubuntu $rootfs
 sudo chmod 755 $rootfs/cleanup_ubuntu
-sudo chroot $rootfs /cleanup_ubuntu
+sudo proot -q qemu-arm-static -S $rootfs /cleanup_ubuntu
 sudo rm $rootfs/cleanup_ubuntu
 
 echo "Copying the final static configuration"
 # Copy over the configuration
 sudo cp -ra ${script_dir}/config_root/* $rootfs
-
-# Restore the original resolve.con
-sudo mv $rootfs/etc/resolv.conf.orig $rootfs/etc/resolve.conf
 
 # unmount
 sudo umount $rootfs/boot/firmware

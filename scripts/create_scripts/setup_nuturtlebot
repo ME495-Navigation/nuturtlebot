@@ -19,7 +19,6 @@ cp -r cmake-${cmake_version_full}-linux-x86_64/share/cmake-${cmake_version} /usr
 # get nuturtlebot messages
 git clone https://github.com/ME495-Navigation/nuturtlebot_msgs.git
 cd nuturtlebot_msgs
-. /opt/ros/noetic/setup.sh
 
 # Need rosdep setup correctly in order to bloom
 rosdep update
