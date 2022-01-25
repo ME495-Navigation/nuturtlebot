@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# Run catkin_make, but with the raspberry pi toolchain
+catkin_make -DCMAKE_TOOLCHAIN_FILE=/usr/share/nuturtlebot/raspi-toolchain.cmake -DCMAKE_INSTALL_PREFIX=arm_install -DCATKIN_DEVEL_PREFIX=arm_devel --build=arm_build $@

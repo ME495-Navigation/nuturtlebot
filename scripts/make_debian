@@ -1,0 +1,52 @@
+#!/bin/sh
+
+# Get the location of this script
+script=$(readlink -f "$0")
+script_dir=$(dirname "$script")
+
+cd $script_dir/..
+
+# build_directory
+build_dir=build/turtlebot_image
+
+# The image file name
+image=turtle.img
+
+# The directory containing the root file system for the raspberry pi
+rootfs=raspi_root
+
+# ---- Setup Script Parameters ----
+package_name=nuturtlebot_1.0_amd64
+pkg_dir=build
+
+# mount the image on loop device
+loop_dev=$(sudo losetup --show -Pf $build_dir/$image)
+echo "Mounting the disk image"
+mkdir -p $build_dir/$rootfs
+sudo mount ${loop_dev}p2 $build_dir/$rootfs
+
+# start creating the package
+mkdir -p $pkg_dir/$package_name/usr/share/nuturtlebot
+
+# Copy the filesystem
+echo "Copying the filesystem"
+new_root=$pkg_dir/$package_name/usr/share/nuturtlebot/$rootfs
+mkdir -p $new_root
+cp -r $build_dir/$rootfs/usr $new_root/
+cp -r $build_dir/$rootfs/bin $new_root/
+cp -r $build_dir/$rootfs/lib $new_root/
+cp -r $build_dir/$rootfs/sbin $new_root/
+
+# unmount the image
+sudo umount ${loop_dev}p2
+sudo losetup -D ${loop_dev}
+
+mkdir -p $pkg_dir/$package_name/usr/bin
+cp scripts/catkin_make_raspi $pkg_dir/$package_name/usr/bin
+cp cmake/raspi-toolchain.cmake $pkg_dir/$package_name/usr/share/nuturtlebot
+
+mkdir -p $pkg_dir/$package_name/DEBIAN
+cp control $pkg_dir/$package_name/DEBIAN/control
+
+cd $pkg_dir/
+dpkg-deb --build --root-owner-group $package_name

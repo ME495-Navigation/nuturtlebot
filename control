@@ -1,0 +1,6 @@
+Package: nuturtlebot
+Version: 1.0
+Architecture: amd64
+Maintainer: Matthew Elwin <elwin@northwestern.edu>
+Description: Enable cross-compiling for ROS raspberry pi, specifically the turtlebot3
+Depends: gcc-arm-linux-gnueabihf, g++-arm-linux-gnueabihf, gdb-multiarch, libc6-armhf-cross, binutils-arm-linux-gnueabi, proot, qemu-user-static, binfmt-support, xz-utils, curl

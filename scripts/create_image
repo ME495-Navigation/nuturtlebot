@@ -106,7 +106,7 @@ echo "Copying the final static configuration"
 # Copy over the configuration
 sudo cp -ra ${script_dir}/config_root/* $rootfs
 
-# unmount
+
 sudo umount $rootfs/boot/firmware
 sudo umount $rootfs
 sudo losetup -d $loop_dev
