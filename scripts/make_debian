@@ -32,15 +32,23 @@ mkdir -p $pkg_dir/$package_name/usr/share/nuturtlebot
 echo "Copying the filesystem"
 new_root=$pkg_dir/$package_name/usr/share/nuturtlebot/$rootfs
 mkdir -p $new_root
-cp -r $build_dir/$rootfs/usr $new_root/
-cp -r $build_dir/$rootfs/bin $new_root/
-cp -r $build_dir/$rootfs/lib $new_root/
-cp -r $build_dir/$rootfs/sbin $new_root/
+cp -r -P $build_dir/$rootfs/usr $new_root/
+cp -r -P $build_dir/$rootfs/bin $new_root/
+cp -r -P $build_dir/$rootfs/lib $new_root/
+cp -r -P $build_dir/$rootfs/sbin $new_root/
+cp -r -P $build_dir/$rootfs/opt $new_root/
 
+# Adjust symlinks for the installed location
+# Find all symbolic links with absolute paths
+echo "Adjusting Symbolic Links"
+find $new_root -type l -lname '/*' -printf 'ln -nsf /usr/share/nuturtlebot/raspi_root/$(readlink %p) %p\n' | sh
+
+echo "unmounting filesystem"
 # unmount the image
 sudo umount ${loop_dev}p2
 sudo losetup -D ${loop_dev}
 
+echo "making debian package"
 mkdir -p $pkg_dir/$package_name/usr/bin
 cp scripts/catkin_make_raspi $pkg_dir/$package_name/usr/bin
 cp cmake/raspi-toolchain.cmake $pkg_dir/$package_name/usr/share/nuturtlebot
