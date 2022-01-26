@@ -1,0 +1,7 @@
+#!/usr/sh
+# mounts the image on the loopback
+loop_dev=$(losetup -Pf /build/raspi.img)
+e2fsck -y -f ${loop_dev}p2
+resize2fs ${loop_dev}p2
+mount ${loop_dev}p2 /build/raspi
+mount ${loop_dev}p1 /build/raspi/boot/firmware

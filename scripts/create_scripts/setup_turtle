@@ -10,6 +10,7 @@ apt-get update \
         ros-noetic-image-proc \
         ros-noetic-navigation \
         ros-noetic-usb-cam \
+        ros-noetic-rviz \
         ros-noetic-slam-toolbox \
         ros-noetic-turtlesim 
 . /opt/ros/noetic/setup.sh
