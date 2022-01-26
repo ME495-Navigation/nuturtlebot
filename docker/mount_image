@@ -1,11 +1,9 @@
 #!/bin/sh
 
 # Mount the raspberry pi image
-
 # First, we need to manually create the loop partitions.
 # This is because if we let losetup do it, the changes
 # to /dev won't be reflected in the container
-echo "Mknod for the raspi image partitions"
 loop_dev=$(losetup -f)
 mknod ${loop_dev}p1 b 259 4
 mknod ${loop_dev}p2 b 259 5
@@ -20,3 +18,5 @@ resize2fs ${loop_dev}p2
 # Mount the partitions
 mount ${loop_dev}p2 /build/raspi
 mount ${loop_dev}p1 /build/raspi/boot/firmware
+
+echo "farbar" > /build/raspi/foobar

@@ -19,4 +19,3 @@ RUN truncate -s 8GB /build/raspi.img && \
 
 COPY mount_image /build/mount_image
 RUN --security=insecure /build/mount_image
-
