@@ -5,6 +5,9 @@ COPY sources.list /etc/apt/sources.list
 COPY qemu-arm-static /usr/bin/
 COPY dependencies.txt /dependencies.txt
 
+
+RUN dpkg --add-architecture amd64 && apt-get update
+
 # Remove packages that aren't useful for cross-compiling
 # And that can cause problems since there is no kernel
 RUN apt-get purge -yq \
@@ -13,12 +16,27 @@ RUN apt-get purge -yq \
     linux-modules* \
     man-db \
     u-boot-rpi && \
-    apt-get -yq autoremove
+    apt-get -yq autoremove 
 
-RUN dpkg --add-architecture amd64 && apt-get update
 
-# manually install dash. WE just need the binary and the pre/post installs scripts always fail
-RUN apt-get download dash && dpkg-deb -x dash_* dash && cp /dash/bin/dash /bin/dash && rm -rf dash*
+# smoothly installing amd64 packages
+RUN apt-get install --allow-remove-essential -yq \
+  coreutils:amd64 \
+  bash:amd64 \
+  dash:amd64 \
+  gawk:amd64 \
+  grep:amd64 \
+  sed:amd64 \
+  findutils:amd64 \
+  make:amd64
+
+# Install cmake, but I need to patch a dependency on cmake-data, since it tries to dl a non-existant amd:64 version
+RUN apt-get download cmake:amd64 &&\
+   dpkg-deb -R cmake*.deb cmake && \
+   sed -i s/cmake-data/cmake-data:armhf/ cmake/DEBIAN/control &&\
+   dpkg-deb -b cmake cmake.deb && \
+   apt-get install -yq ./cmake.deb && \
+   rm -rf cmake cmake*.deb
 
 # Manually download and install all the x86 packages we need while ignoring dependencies.
 # The binaries will overwrite the arm binaries but the
@@ -27,10 +45,11 @@ RUN apt-get download dash && dpkg-deb -x dash_* dash && cp /dash/bin/dash /bin/d
 # including during the build process, will not require qemu-arm-static
 
 # A list of all recursive dependencies generated running the command on a working Ubuntu system
-# apt-rdepends coreutils findutils gawk grep sed make \
+# apt-rdepends \
 #              gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf\
-#              bash cmake python python3 lsb-release perm passwd | grep -v "^ "\
+#              python3 lsb-release perm passwd | grep -v "^ "\
 #              | grep -v "^awk$" | grep -v "debconf-2.0" > dependencies.txt
+RUN apt-get install -yq --allow-remove-essential apt:amd64 
 RUN apt-get download $(xargs -a dependencies.txt)
 RUN dpkg -i --force-all *.deb && rm *.deb
 
