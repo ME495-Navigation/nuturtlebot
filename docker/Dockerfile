@@ -7,15 +7,13 @@ COPY dependencies.txt /dependencies.txt
 
 # Remove packages that aren't useful for cross-compiling
 # And that can cause problems since there is no kernel
-RUN apt-get purge \
+RUN apt-get purge -yq \
     initramfs-tools \
     linux-image* \
     linux-modules* \
     man-db \
     u-boot-rpi && \
-    apt-get autoremove
-
-
+    apt-get -yq autoremove
 
 RUN dpkg --add-architecture amd64 && apt-get update
 
@@ -47,4 +45,6 @@ COPY catkin_arm_isolated /usr/bin/catkin_arm_isolated
 COPY arm /arm
 RUN chmod 666 /etc/group /etc/passwd
 WORKDIR /ros_ws
-CMD ["cat", "/arm"]
+# replace the container with the container id
+# which the hostname is set to
+CMD ["sed", "s/CONTAINER/$(hostname)/", /arm"]

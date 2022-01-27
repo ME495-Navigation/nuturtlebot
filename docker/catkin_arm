@@ -1,2 +1,3 @@
-#!/usr/bin/env bash
+#!/bin/sh
+. /opt/ros/noetic/setup.sh
 catkin_make -DCMAKE_TOOLCHAIN_FILE=/toolchain.cmake -DCMAKE_INSTALL_PREFIX=arm_install -DCATKIN_DEVEL_PREFIX=arm_devel --build=arm_build $@
