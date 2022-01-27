@@ -8,9 +8,6 @@ set(CMAKE_C_COMPILER arm-linux-gnueabihf-gcc CACHE STRING "The C compiler")
 
 set(CMAKE_CXX_COMPILER arm-linux-gnueabihf-g++ CACHE STRING "The C++ compiler") 
 
-set(CMAKE_SYSROOT_PATH /usr/share/nuturtlebot/raspi_root)
-set(CMAKE_FIND_ROOT_PATH /usr/share/nuturtlebot/raspi_root)
-
 # only find programs on the host
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 

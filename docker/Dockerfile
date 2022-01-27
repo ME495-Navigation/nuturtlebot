@@ -36,6 +36,8 @@ RUN apt-get download cmake:amd64 &&\
    sed -i s/cmake-data/cmake-data:armhf/ cmake/DEBIAN/control &&\
    dpkg-deb -b cmake cmake.deb && \
    apt-get install -yq ./cmake.deb && \
+   apt-get download cmake-data && \
+   dpkg -i --force-all ./cmake-data*.deb && \
    rm -rf cmake cmake*.deb
 
 # Manually download and install all the x86 packages we need while ignoring dependencies.
