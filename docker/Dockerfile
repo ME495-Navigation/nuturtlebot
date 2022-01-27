@@ -47,4 +47,4 @@ RUN chmod 666 /etc/group /etc/passwd
 WORKDIR /ros_ws
 # replace the container with the container id
 # which the hostname is set to
-CMD ["sed", "s/CONTAINER/$(hostname)/", /arm"]
+CMD ["cat", "/arm"]
