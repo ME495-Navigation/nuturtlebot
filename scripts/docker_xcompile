@@ -1,0 +1,23 @@
+#!/bin/sh
+# Make a docker cross-compiling container from the disk image
+
+# Get the location of this script
+script=$(readlink -f "$0")
+script_dir=$(dirname "$script")
+
+docker_dir=$script_dir/../build/docker
+rootfs=$docker_dir/raspi_root
+image=$script_dir/../build/turtlebot_image/turtle.img
+
+mkdir -p $rootfs
+
+cp -r $script_dir/../docker/* $docker_dir
+cp /usr/bin/qemu-arm-static $docker_dir
+
+loop_dev=$(sudo losetup -Pf --show $image)
+sudo mount -o ro ${loop_dev}p2 $rootfs
+
+sudo docker build -t ros_xcompile $docker_dir
+
+sudo umount ${loop_dev}p2
+sudo losetup -d ${loop_dev}
