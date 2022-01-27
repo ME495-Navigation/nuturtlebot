@@ -16,7 +16,5 @@ e2fsck -y -f ${loop_dev}p2
 resize2fs ${loop_dev}p2
 
 # Mount the partitions
-mount ${loop_dev}p2 /build/raspi
-mount ${loop_dev}p1 /build/raspi/boot/firmware
+mount ${loop_dev}p2 /
 
-echo "farbar" > /build/raspi/foobar
