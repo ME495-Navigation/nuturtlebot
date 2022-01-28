@@ -96,7 +96,8 @@ then
     # install the fingerprint
     ssh-keyscan -H $robotdns | sudo tee /tmp/raspi/home/msr/.ssh/known_hosts
     sudo chown $msr_uid:$msr_uid /tmp/raspi/home/msr/.ssh/known_hosts
-    echo "Send sdcard/home/msr/.ssh/id_robotdns.pub to your system administrator so the robot can access the robotdns server"
+    cp /tmp/raspi/home/msr/.ssh/id_robotdns.pub /tmp/id_robotdns.pub
+    echo "Send /tmp/id_robotdns.pub to your system administrator so the robot can access the robotdns server"
 fi
 
 sudo umount /tmp/raspi
