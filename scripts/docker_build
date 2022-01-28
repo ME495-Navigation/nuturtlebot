@@ -18,7 +18,7 @@ cp /usr/bin/qemu-arm-static $docker_dir
 loop_dev=$(sudo losetup -Pf --show $image)
 sudo mount -o ro ${loop_dev}p2 $rootfs
 
-sudo docker build -t rosberrypi:noetic $docker_dir
+sudo docker build -t reem17/rosberrypi:noetic $docker_dir
 
 sudo umount ${loop_dev}p2
 sudo losetup -d ${loop_dev}
