@@ -1,22 +1,24 @@
-# Nuturtlebot 
-1. Low-level access to the Turtlebot3 in ROS 
-   - Access to raw sensor data (e.g., encoder ticks)
-   - Access to raw motor commands (e.g., directly control wheel velocities).
-   - Ability to switch to the original firmware, when needed
-2. Scripts for building turtlebot3 OpenCR firmware (and modified versions) from the command line
-3. A CMake toolchain file that can be used to cross-compile ROS programs for the turtlebot
-
-The purpose is to enable learning low-level robot control in ROS without needing to do any embedded programming
+# Nuturtlebot
+## Overview
+Enable learning low-level robot control in ROS without needing to do any embedded programming
 (even though, outside an educational context, it makes sense to perform the conversion between say `cmd_vel` messages and
 wheel velocities directly on the OpenCR embedded microcontroller, as is the default for ROBOTIS).
 
-# Usage
-1. Download the binary `nuturtlebot` release and install with `apt`:
-   `curl  ... sudo apt install ./nuturtlebot.deb`
-2. To cross-Compile code for the raspberry pi: 
-   `` catkin_make_raspi # catkin_make for raspberry pi ``
-   `` catkin_make_isolated_raspi # catkin_make isolated for raspberry pi ``
-   `` catkin_raspi # catkin tools ``
+## Contents
+1. Scripts for building a raspberrypi 3 Ubuntu image for use with the turtlebot
+   - Contains all ROS packages for running the turtlebot3
+   - Ability to switch between original OpenCR firmware and custom raw firmware
+   - Custom Raw firmware enables ROS access to raw sensor data (e.g., encoder ticks) and direct motor control of wheel velocities
+2. Scripts for building turtlebot3 OpenCR firmware (and modified versions) from the command line
+   - Uses the Arduino CLI interface to build OpenCR firmware, from a custom fork of that firmware
+3. Docker container for cross-compiling programs that run on the Raspberry PI
+
+# Setup
+1. Install docker and pre-requisites: `sudo apt install docker.io`
+2. In the base of the ROS workspace run:
+   `docker run reem17/rosberrypi:noetic > arm && chmod 755 arm`
+3. To build with `catkin_make` for arm use `./arm catkin_arm`
+3. To build with `catkin_make_isolated` for arm use `./arm catkin_arm_isolated`
 
 # Building the Nuturtlebot Image
 These instructions explain how to build a  custom SDCard  image for the turtlebot3.
@@ -31,7 +33,6 @@ You need to be root to do this. It is a TODO to lower the permission requirement
 3. After writing the image to the SDcard, the raspberry pi should boot and connect to the network.  ssh into the raspberry pi, then
    run `opencr_update stock` to install the stock firmware or `opencr_update raw` to install the low-level firmware
 
-3
 2. If your turtlebot3 has not yet been setup, run [scripts/write_image](scripts/write_image) to write the image to the sd_card
    - This script allows each image written to be customized for a specific robot
    - Should be invoked as `rosrun nuturtlebot write_image <sdcard> <name> <pubkey> <nmcon> [robotdns]`
@@ -61,9 +62,9 @@ These are instructions for how to build the firmware, which is automatically don
    - The firmware update wrapping script is in `build/opencr/opencr_update` (Put in on the turtlebot3 at `/usr/bin`)
    - Use `opencr_update stock` on the turtlebot3 to install stock firmware and `opencr_update raw` to install the raw firmware
 
-# Building the Debian Package
-1. For easy deployment, this package can be built into a binary debian package
-2. This process uses `bloom` but also specifies some custom flags
-3. Use `rosrun nuturtlebot build_deb` to build the debian package
-   - This package is quite large since it contains a full image for cross-compiling purposes
-   - If you just need the m
+# Building The Docker Cross-compile image
+- The Docker Cross-compile image is a docker image that is based off of the raspberry pi image.
+- The libraries on the docker cross-compile image are therefore the same as those on the raspberry pi
+- However, the dockerfile replaces several armhf binaries with amd64 binaries and installs a cross compiler
+- First, build the turtlebot image
+- Then, run `./scripts/docker_build`

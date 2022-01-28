@@ -1,5 +1,6 @@
 #!/bin/sh
 # Make a docker cross-compiling container from the disk image
+# Pass an argument to remake the context directory
 
 # Get the location of this script
 script=$(readlink -f "$0")
