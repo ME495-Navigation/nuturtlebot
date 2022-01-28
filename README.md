@@ -13,7 +13,7 @@ wheel velocities directly on the OpenCR embedded microcontroller, as is the defa
    - Uses the Arduino CLI interface to build OpenCR firmware, from a custom fork of that firmware
 3. Docker container for cross-compiling programs that run on the Raspberry PI
 
-# Setup
+# Setup Cross-Compiling
 1. Install docker and pre-requisites: `sudo apt install docker.io`
 2. In the base of the ROS workspace run:
    `docker run reem17/rosberrypi:noetic > arm && chmod 755 arm`
@@ -47,6 +47,7 @@ You need to be root to do this. It is a TODO to lower the permission requirement
      - `<robotdns>` (optional): The [robotdns](https://github.com/m-elwin/robotdns) server location, if being used.
        - robotdns is a dynamic DNS server enabling robots to communicate via hostnames even when we do not control the LAN settings (e.g., are on a corporate network).
        - For this option to work, the `<nmcon>` must be a network profile created by the robotdns setup and be named `network.robot.nmconnection`.
+3. Log into the turtlebot and install the firmware with either `opencr_update stock` or `opencr_update raw` (see below).       
 # Building the Firmware
 These are instructions for how to build the firmware, which is automatically done when building the SDCard image, but can be done separately.  
 **If your turtlebot3 is already set up, you need not run these commands**

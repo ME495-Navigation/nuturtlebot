@@ -16,22 +16,26 @@ fi
 mkdir -p $build
 cd $build
 
+echo "Downloading Arduino CLI"
 # Download the arduino command line interface
 curl -L "https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Linux_64bit.tar.gz" > arduinocli.tar.gz
 tar xf arduinocli.tar.gz
 
+echo "Generating ROSserial files"
 # Generate the rosserial files, in a directory called ros_lib
 rosrun rosserial_arduino make_libraries.py .
 
-
+echo "Installing OpenCR files"
 # Install the board files for the arduino
 ./arduino-cli --config-file $script_dir/arduino-cli.yaml core install OpenCR:OpenCR -v
 ./arduino-cli --config-file $script_dir/arduino-cli.yaml core update-index
 ./arduino-cli --config-file $script_dir/arduino-cli.yaml lib update-index
 
+echo "Cloning OpenCR"
 # Download my fork of OpenCR
 git clone https://github.com/ME495-Navigation/OpenCR -b noetic-raw
 
+echo "Updating ROSserial Libraries"
 # For various reasons, we need the original ros.h and ArduinoHardware.h, since
 # these files have been modified specifically for OpenCR
 cp OpenCR/arduino/opencr_arduino/opencr/libraries/turtlebot3_ros_lib/ros.h ros_lib/
@@ -44,11 +48,13 @@ cp -r ros_lib OpenCR/arduino/opencr_arduino/opencr/libraries/turtlebot3_ros_lib
 
 # Replace the supplied version of OpenCR with my fork of it
 version=$(ls --color=never arduino/packages/OpenCR/hardware/OpenCR/)
+echo "Found OpencR Version $version"
 rm -rf arduino/packages/OpenCR/hardware/OpenCR/$version/libraries
 ln -s $(pwd)/OpenCR/arduino/opencr_arduino/opencr/libraries arduino/packages/OpenCR/hardware/OpenCR/$version/libraries
 
+echo "Compiling raw mode"
 # compile the "raw" mode, which gives ROS low-level access
-./arduino-cli --config-file $script_dir/arduino-cli.yaml compile  --build-path firmware_raw --fqbn OpenCR:OpenCR:OpenCR arduino/packages/OpenCR/hardware/OpenCR/1.4.18/libraries/turtlebot3/examples/turtlebot3_burger/turtlebot3_core/turtlebot3_core.ino -v
+./arduino-cli --config-file $script_dir/arduino-cli.yaml compile  --build-path firmware_raw --fqbn OpenCR:OpenCR:OpenCR arduino/packages/OpenCR/hardware/OpenCR/$version/libraries/turtlebot3/examples/turtlebot3_burger/turtlebot3_core/turtlebot3_core.ino # -v (add for verbose output)
 
 # copy the opencr_update and opencr_shell file. These are tools for loading the firmware
 # This step is not strictly necessary, but it provides a clear location for the shell files
@@ -56,7 +62,7 @@ ln -s $(pwd)/OpenCR/arduino/opencr_arduino/opencr/libraries arduino/packages/Ope
 cp ./OpenCR/arduino/opencr_develop/opencr_ld_shell/update.sh ./opencr_update
 cp ./OpenCR/arduino/opencr_develop/opencr_ld_shell/opencr_ld_shell_arm ./opencr_ld_shell
 
-
+echo "Compiling Original Mode"
 # Compile the "original" mode, that is the stock turtlebot firmware
 cd OpenCR
 # undo the modifications we've made to the repository
@@ -65,10 +71,8 @@ git reset --hard noetic-raw
 git switch noetic-orig
 
 # Update with the latest rosserial libraries
-rm -rf OpenCR/arduino/opencr_arduino/opencr/libraries/turtlebot3_ros_lib
-cp -r ros_lib OpenCR/arduino/opencr_arduino/opencr/libraries/turtlebot3_ros_lib
 cd ..
-./arduino-cli --config-file $script_dir/arduino-cli.yaml compile  --build-path firmware_orig --fqbn OpenCR:OpenCR:OpenCR arduino/packages/OpenCR/hardware/OpenCR/1.4.18/libraries/turtlebot3/examples/turtlebot3_burger/turtlebot3_core/turtlebot3_core.ino -v
+./arduino-cli --config-file $script_dir/arduino-cli.yaml compile  --build-path firmware_orig --fqbn OpenCR:OpenCR:OpenCR arduino/packages/OpenCR/hardware/OpenCR/$version/libraries/turtlebot3/examples/turtlebot3_burger/turtlebot3_core/turtlebot3_core.ino # -v (add for verbose output)
 
 # create the opencr firmware files
 ./OpenCR/arduino/opencr_develop/opencr_ld_shell/opencr_ld_shell_x86 make firmware_orig/turtlebot3_core.ino.bin burger NU-MSR
