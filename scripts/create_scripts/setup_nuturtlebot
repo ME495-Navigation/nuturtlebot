@@ -30,7 +30,7 @@ debian/rules binary
 # remove cmake, reinstall distributed cmake
 rm -rf /usr/share/cmake*
 rm /usr/bin/cmake
-apt-get install -y cmake
+apt-get install --reinstall cmake cmake-data
 
 apt-get install --no-install-recommends --no-install-suggests -y ../ros-noetic-nuturtlebot-msgs_0.0.1-0focal_armhf.deb
 
