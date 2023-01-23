@@ -5,6 +5,7 @@ FROM ubuntu:jammy
 
 RUN apt-get update && apt-get install -y \
     curl \
+    docker.io \
     parted \
     xz-utils
 
@@ -13,6 +14,7 @@ RUN 01-download_raspi_image.sh
 
 COPY 02-expand_raspi_image.sh /usr/bin
 RUN 02-expand_raspi_image.sh
-RUN mkdir /raspi
+RUN mkdir /mnt/raspi
 
 COPY 03-resize_mount.sh /usr/bin
+COPY 04-build_base.sh /usr/bin

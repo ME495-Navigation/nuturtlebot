@@ -7,6 +7,6 @@ loop_dev=$(losetup --show -Pf raspi.img)
 e2fsck -y -f ${loop_dev}p2
 resize2fs ${loop_dev}p2
 
-mount ${loop_dev}p2 /raspi
-mount ${loop_dev}p1 /raspi/boot/firmware
+mount ${loop_dev}p2 /mnt/raspi
+mount ${loop_dev}p1 /mnt/raspi/boot/firmware
 
