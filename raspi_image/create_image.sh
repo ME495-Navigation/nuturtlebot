@@ -37,6 +37,9 @@ echo "Building the numsr:raspi_ros2 (ros2 installation)"
 cd ${script_dir}/cleanup
 sudo docker build -t numsr:raspi_ros2 .
 
+echo "Building the numsr:turtlebot (turtlebot3 installation)"
+cd ${script_dir/turtlebot}
+sudo docker build -t numsr:turtlebot .
 # Build a bunch of other stuff
 
 # for the final image
