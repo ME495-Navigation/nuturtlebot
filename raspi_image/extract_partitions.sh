@@ -28,7 +28,7 @@ sys_start=$(sfdisk -l -o Start $image | tail -n 2 | awk '{ print $1 }' | tail -n
 sys_count=$(sfdisk -l -o Sectors $image | tail -n 2 | awk '{ print $1 }' | tail -n 1)
 
 # Extract the partition table
-dd if=raspi.img of=part.img bs=$sector_size \
+dd if=raspi.img of=mbr.img bs=$sector_size \
    count=$part_count
 
 # Extract the boot partition.
