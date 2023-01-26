@@ -3,6 +3,9 @@
 # All units are in sectors
 # There are 512 bytes per sector
 
+# This file is not currently used because --privileged is still required for fuse in docker
+# But at some point it could be useful to extract the partitions and build an image
+
 # The path to the image file
 image=raspi.img
 
