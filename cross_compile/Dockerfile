@@ -2,7 +2,6 @@ FROM scratch
 COPY raspi_root /
 
 COPY sources.list /etc/apt/sources.list
-COPY qemu-arm-static /usr/bin/
 COPY dependencies.txt /dependencies.txt
 
 
@@ -18,27 +17,18 @@ RUN apt-get purge -yq \
     u-boot-rpi && \
     apt-get -yq autoremove 
 
+# install amd64 packages that install smoothly
+RUN apt-get install -yq cmake:amd64 libapt-pkg6.0:amd64 libseccomp2:amd64 libsystemd0:amd64 cmake:amd64
 
-# smoothly installing amd64 packages
-RUN apt-get install --allow-remove-essential -yq \
-  coreutils:amd64 \
-  bash:amd64 \
-  dash:amd64 \
-  gawk:amd64 \
-  grep:amd64 \
-  sed:amd64 \
-  findutils:amd64 \
-  make:amd64
+# Download amd64 apt, and remove arm64 apt, then install amd64 apt
+# amd64 apt runs faster but it also by default downloads amd64 packages
+# and, for some reason, when doing this, it is able to download amd64 packages
+# that the arm version cannot do
+RUN apt-get download apt:amd64 && \
+    apt-get remove -yq --allow-remove-essential apt && \
+    dpkg -i ./*.deb && \
+    rm ./*.deb
 
-# Install cmake, but I need to patch a dependency on cmake-data, since it tries to dl a non-existant amd:64 version
-RUN apt-get download cmake:amd64 &&\
-   dpkg-deb -R cmake*.deb cmake && \
-   sed -i s/cmake-data/cmake-data:armhf/ cmake/DEBIAN/control &&\
-   dpkg-deb -b cmake cmake.deb && \
-   apt-get install -yq ./cmake.deb && \
-   apt-get download cmake-data && \
-   dpkg -i --force-all ./cmake-data*.deb && \
-   rm -rf cmake cmake*.deb
 
 # Manually download and install all the x86 packages we need while ignoring dependencies.
 # The binaries will overwrite the arm binaries but the
@@ -48,10 +38,9 @@ RUN apt-get download cmake:amd64 &&\
 
 # A list of all recursive dependencies generated running the command on a working Ubuntu system
 # apt-rdepends \
-#              gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf\
-#              python3 lsb-release perm passwd | grep -v "^ "\
+#              gcc-aarch64-linux-gnu g++-aarch64-linux-gnu\
+#              python3 lsb-release perm passwd coreutils bash dash gawk grep sed findutils make | grep -v "^ "\
 #              | grep -v "^awk$" | grep -v "debconf-2.0" > dependencies.txt
-RUN apt-get install -yq --allow-remove-essential apt:amd64 
 RUN apt-get download $(xargs -a dependencies.txt)
 RUN dpkg -i --force-all *.deb && rm *.deb
 
@@ -61,11 +50,12 @@ COPY raspi-toolchain.cmake /toolchain.cmake
 RUN mkdir /ros_ws
 VOLUME /ros_ws
 
-COPY catkin_arm /usr/bin/catkin_arm
-COPY catkin_arm_isolated /usr/bin/catkin_arm_isolated
-COPY arm /arm
+COPY colcon_aarch64 /usr/bin/colcon_aarch64
+COPY aarch64 /aarch64
 RUN chmod 666 /etc/group /etc/passwd
+RUN chown -R msr:msr /home/msr
 WORKDIR /ros_ws
+
 # replace the container with the container id
 # which the hostname is set to
-CMD ["cat", "/arm"]
+CMD ["cat", "/aarch64"]

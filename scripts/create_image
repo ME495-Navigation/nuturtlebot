@@ -29,7 +29,7 @@ then
     echo "Raspberry Pi Ubuntu Already Present at $image. Skipping download (delete it to re-download)";
 else
     echo "Downloading the raspberry pi ubuntu image"
-    curl -L "https://cdimage.ubuntu.com/releases/20.04.3/release/ubuntu-20.04.3-preinstalled-server-armhf+raspi.img.xz" | unxz > $image
+    curl -L "https://cdimage.ubuntu.com/releases/22.04.1/release/ubuntu-22.04.1-preinstalled-server-arm64+raspi.img.xz" | unxz > $image
 fi
 
 echo "Preparing the disk image"
@@ -77,13 +77,13 @@ curl -L "https://raw.githubusercontent.com/m-elwin/robotdns/main/21-robotdns-reg
 sudo chmod 500 $rootfs/etc/NetworkManager/dispatcher.d/21-robotdns-register.sh
 
 echo "Building the firmware. When booted, you can install the firmware with 'opencr_update stock' OR 'opencr_update raw'"
-${script_dir}/build_firmware opencr_firmware
+#${script_dir}/build_firmware opencr_firmware
 # copy the firmware files to the image
-sudo mkdir $rootfs/usr/share/opencr
-sudo cp opencr_firmware/burger.opencr $rootfs/usr/share/opencr
-sudo cp opencr_firmware/raw-burger.opencr $rootfs/usr/share/opencr
-sudo cp opencr_firmware/opencr_ld_shell $rootfs/usr/bin
-sudo cp opencr_firmware/opencr_update $rootfs/usr/bin
+#sudo mkdir $rootfs/usr/share/opencr
+#sudo cp opencr_firmware/burger.opencr $rootfs/usr/share/opencr
+#sudo cp opencr_firmware/raw-burger.opencr $rootfs/usr/share/opencr
+#sudo cp opencr_firmware/opencr_ld_shell $rootfs/usr/bin
+#sudo cp opencr_firmware/opencr_update $rootfs/usr/bin
 
 
 echo "Nuturtlebot Installation Ubuntu"
